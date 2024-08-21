@@ -28,7 +28,8 @@ namespace DLSS_Swapper.UserControls
         public DLSSPickerControl(Game game)
         {
             _game = game;
-            DLSSRecords.AddRange(App.CurrentApp.MainWindow.CurrentDLSSRecords);
+            bool hideNotDownloaded = Settings.Instance.HideNotDownloadedVersions;
+            DLSSRecords.AddRange(App.CurrentApp.MainWindow.CurrentDLSSRecords.Where(r => r.LocalRecord.IsDownloaded == hideNotDownloaded));
 
             this.InitializeComponent();
             DataContext = this;

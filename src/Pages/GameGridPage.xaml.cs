@@ -237,6 +237,21 @@ namespace DLSS_Swapper.Pages
                         DefaultButton = ContentDialogButton.Primary,
                         Content = $"DLSS was not detected in {game.Title}.",
                     };
+
+                    await dialog.ShowAsync();
+                    return;
+                }
+
+                if (Settings.Instance.HideNotDownloadedVersions && App.CurrentApp.MainWindow.CurrentDLSSRecords.Where(static r => r.LocalRecord.IsDownloaded).Count() is 0)
+                {
+                    dialog = new(XamlRoot)
+                    {
+                        Title = "Error",
+                        PrimaryButtonText = "Okay",
+                        DefaultButton = ContentDialogButton.Primary,
+                        Content = "You have not downloaded any DLSS version. Please download one from the library page.",
+                    };
+
                     await dialog.ShowAsync();
                     return;
                 }

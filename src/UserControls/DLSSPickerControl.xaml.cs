@@ -34,16 +34,13 @@ namespace DLSS_Swapper.UserControls
             this.InitializeComponent();
             DataContext = this;
 
-            // TODO: If you select an imported DLSS 
             var detectedVersion = DLSSRecords.FirstOrDefault(v => v.MD5Hash == game.CurrentDLSSHash);
-            if (detectedVersion == null)
-            {
-
-            }
-            else
+            if (detectedVersion is not null)
             {
                 DLSSRecordsListView.SelectedItem = detectedVersion;
             }
+            // TODO: If you select an imported DLSS
+            // else { }
         }
 
         internal DLSSRecord GetSelectedDLSSRecord()

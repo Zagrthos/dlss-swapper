@@ -68,6 +68,7 @@ namespace DLSS_Swapper.Pages
 
             AllowUntrustedToggleSwitch.IsOn = Settings.Instance.AllowUntrusted;
             AllowExperimentalToggleSwitch.IsOn = Settings.Instance.AllowExperimental;
+            HideNotDownloadedToggleSwitch.IsOn = Settings.Instance.HideNotDownloadedVersions;
             LoggingComboBox.SelectedItem = Settings.Instance.LoggingLevel;
 
             DataContext = this;
@@ -125,7 +126,18 @@ namespace DLSS_Swapper.Pages
             }
         }
 
-        async Task CheckForUpdatesAsync()
+        private void HideNotDownloaded_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is null)
+            {
+                return;
+            }
+
+            if (e.OriginalSource is ToggleSwitch toggleSwitch)
+            {
+                Settings.Instance.HideNotDownloadedVersions = toggleSwitch.IsOn;
+            }
+        }
         {
             IsCheckingForUpdates = true;
             var githubUpdater = new Data.GitHub.GitHubUpdater();

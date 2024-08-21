@@ -64,6 +64,16 @@
                     </TextBlock>
                 </StackPanel>
 
+                <TextBlock
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Margin="0,40,0,0"
+                    Text="Hide Not Downloaded DLSS Versions" />
+                <StackPanel Margin="0,10,0,0">
+                    <ToggleSwitch x:Name="HideNotDownloadedToggleSwitch" Toggled="HideNotDownloaded_Toggled" OffContent="No" OnContent="Yes" Margin="0,0,0,4"/>
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" FontStyle="Italic" Margin="0,8,0,0">
+                        This setting will hide not downloaded DLSS versions in the selector.
+                    </TextBlock>
+                </StackPanel>
 
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"

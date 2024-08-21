@@ -133,7 +133,23 @@ namespace DLSS_Swapper
             }
         }
 
-        DateTimeOffset _lastRecordsRefresh = DateTimeOffset.MinValue;
+        private bool _hideNotDownloadedVersions = false;
+        public bool HideNotDownloadedVersions
+        {
+            get { return _hideNotDownloadedVersions; }
+            set
+            {
+                if (_hideNotDownloadedVersions != value)
+                {
+                    _hideNotDownloadedVersions = value;
+                    if (_autoSave)
+                    {
+                        SaveJson();
+                    }
+                }
+            }
+        }
+
         public DateTimeOffset LastRecordsRefresh
         {
             get { return _lastRecordsRefresh; }

@@ -1,33 +1,14 @@
-﻿using DLSS_Swapper.Data;
-using DLSS_Swapper.Data.EpicGamesStore;
-using DLSS_Swapper.Data.GOG;
-using DLSS_Swapper.Data.Steam;
-using DLSS_Swapper.Data.UbisoftConnect;
-using DLSS_Swapper.Data.Xbox;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DLSS_Swapper.Data;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Principal;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -39,19 +20,17 @@ namespace DLSS_Swapper.Pages
     /// </summary>
     public sealed partial class GameGridPage : Page
     {
-        public List<IGameLibrary> GameLibraries { get; } = new List<IGameLibrary>();
+        public List<IGameLibrary> GameLibraries { get; } = [];
 
-        bool _loadingGamesAndDlls = false;
+        private bool _loadingGamesAndDlls = false;
 
         public GameGridPage()
         {
             this.InitializeComponent();
             DataContext = this;
-
         }
 
-
-        async Task LoadGamesAsync()
+        private async Task LoadGamesAsync()
         {
             // Added this check so if we get to here and this is true we probably crashed loading games last time and we should prompt for that.
             if (Settings.Instance.WasLoadingGames)
@@ -63,7 +42,7 @@ namespace DLSS_Swapper.Pages
                 };
                 paragraph.Inlines.Add(new Run()
                 {
-                    Text = "DLSS Swapper had an issue loading game libraries.  Please try disabling a game library below. You can re-enable these options later in the settings.",
+                    Text = "DLSS Swapper had an issue loading game libraries. Please try disabling a game library below. You can re-enable these options later in the settings.",
                 });
                 richTextBlock.Blocks.Add(paragraph);
                 paragraph = new Paragraph()
@@ -92,23 +71,19 @@ namespace DLSS_Swapper.Pages
 
 
 
-
                 var grid = new Grid()
                 {
                     RowSpacing = 10,
                 };
-                grid.RowDefinitions.Add(new RowDefinition());
-                grid.RowDefinitions.Add(new RowDefinition());
 
+                grid.RowDefinitions.Add(new RowDefinition());
+                grid.RowDefinitions.Add(new RowDefinition());
                 Grid.SetRow(richTextBlock, 0);
                 grid.Children.Add(richTextBlock);
 
-
                 var gameLibrarySelectorControl = new GameLibrarySelectorControl();
-
                 Grid.SetRow(gameLibrarySelectorControl, 1);
                 grid.Children.Add(gameLibrarySelectorControl);
-
 
                 var dialog = new EasyContentDialog(XamlRoot)
                 {
@@ -118,8 +93,10 @@ namespace DLSS_Swapper.Pages
                     DefaultButton = ContentDialogButton.Primary,
                     Content = grid,
                 };
+
                 var result = await dialog.ShowAsync();
-                if (result == ContentDialogResult.Primary)
+
+                if (result is ContentDialogResult.Primary)
                 {
                     gameLibrarySelectorControl.Save();
                 }
@@ -154,7 +131,7 @@ namespace DLSS_Swapper.Pages
             });
         }
 
-        void FilterGames()
+        private void FilterGames()
         {
             // TODO: Remove weird hack which otherwise causes MainGridView_SelectionChanged to fire when changing MainGridView.ItemsSource.
             MainGridView.SelectionChanged -= MainGridView_SelectionChanged;
@@ -163,7 +140,6 @@ namespace DLSS_Swapper.Pages
 
             if (Settings.Instance.GroupGameLibrariesTogether)
             {
-
                 var collectionViewSource = new CollectionViewSource()
                 {
                     IsSourceGrouped = true,
@@ -189,7 +165,7 @@ namespace DLSS_Swapper.Pages
                 {
                     foreach (var gameLibrary in GameLibraries)
                     {
-                        games.AddRange(gameLibrary.LoadedGames.Where(g => g.HasDLSS == true));
+                        games.AddRange(gameLibrary.LoadedGames.Where(g => g.HasDLSS));
                     }
                 }
                 else
@@ -210,15 +186,14 @@ namespace DLSS_Swapper.Pages
             MainGridView.SelectionChanged += MainGridView_SelectionChanged;
         }
 
-
-        async void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadGamesAndDlls();
         }
 
-        async void MainGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void MainGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count == 0)
+            if (e.AddedItems.Count is 0)
             {
                 return;
             }
@@ -228,11 +203,11 @@ namespace DLSS_Swapper.Pages
             {
                 EasyContentDialog dialog;
 
-                if (game.HasDLSS == false)
+                if (!game.HasDLSS)
                 {
                     dialog = new EasyContentDialog(XamlRoot)
                     {
-                        //dialog.Title = "Error";
+                        Title = "Error",
                         PrimaryButtonText = "Okay",
                         DefaultButton = ContentDialogButton.Primary,
                         Content = $"DLSS was not detected in {game.Title}.",
@@ -257,7 +232,7 @@ namespace DLSS_Swapper.Pages
                 }
 
                 var dlssPickerControl = new DLSSPickerControl(game);
-                dialog = new EasyContentDialog(XamlRoot)
+                dialog = new(XamlRoot)
                 { 
                     Title = "Select DLSS Version",
                     PrimaryButtonText = "Swap",
@@ -266,52 +241,57 @@ namespace DLSS_Swapper.Pages
                     Content = dlssPickerControl,
                 };
 
-                if (String.IsNullOrEmpty(game.BaseDLSSVersion) == false)
+                if (!string.IsNullOrWhiteSpace(game.BaseDLSSVersion))
                 {
                     dialog.SecondaryButtonText = "Reset";
                 }
 
                 var result = await dialog.ShowAsync();
 
-
-                if (result == ContentDialogResult.Primary)
+                if (result is ContentDialogResult.Primary)
                 {
                     var selectedDLSSRecord = dlssPickerControl.GetSelectedDLSSRecord();
 
-                    if (selectedDLSSRecord.LocalRecord.IsDownloading == true || selectedDLSSRecord.LocalRecord.IsDownloaded == false)
+                    if (selectedDLSSRecord.LocalRecord.IsDownloading || !selectedDLSSRecord.LocalRecord.IsDownloaded)
                     {
                         // TODO: Initiate download here.
-                        dialog = new EasyContentDialog(XamlRoot)
+                        dialog = new(XamlRoot)
                         {
                             Title = "Error",
                             CloseButtonText = "Okay",
                             DefaultButton = ContentDialogButton.Close,
                             Content = "Please download the DLSS record from the downloads page first.",
                         };
+
                         await dialog.ShowAsync();
                         return;
                     }
 
                     var didUpdate = game.UpdateDll(selectedDLSSRecord);
 
-                    if (didUpdate.Success == false)
+                    if (!didUpdate.Success)
                     {
-                        dialog = new EasyContentDialog(XamlRoot)
+                        dialog = new(XamlRoot)
                         {
                             Title = "Error",
                             PrimaryButtonText = "Okay",
                             DefaultButton = ContentDialogButton.Primary,
                             Content = didUpdate.Message,
                         };
+
                         /*
+                        // TODO: Add run as adminstrator
                         // Disabled as I am unsure how to prompt to run as admin.
                         if (didUpdate.PromptToRelaunchAsAdmin == true)
                         {
                             dialog.SecondaryButtonText = "Relaunch as Administrator";
                         }
                         */
+
                         var dialogResult = await dialog.ShowAsync();
+
                         /*
+                        // TODO: Add run as adminstrator
                         // Disabled as I am unsure how to prompt to run as admin.
                         if (didUpdate.PromptToRelaunchAsAdmin == true && dialogResult == ContentDialogResult.Secondary)
                         {
@@ -320,11 +300,11 @@ namespace DLSS_Swapper.Pages
                         */
                     }
                 }
-                else if (result == ContentDialogResult.Secondary)
+                else if (result is ContentDialogResult.Secondary)
                 {
                     var didReset = game.ResetDll();
 
-                    if (didReset.Success == false)
+                    if (!didReset.Success)
                     {
                         dialog = new EasyContentDialog(XamlRoot)
                         {
@@ -333,14 +313,20 @@ namespace DLSS_Swapper.Pages
                             DefaultButton = ContentDialogButton.Primary,
                             Content = didReset.Message,
                         };
+
                         /*
+                        // TODO: Add run as adminstrator
                         // Disabled as I am unsure how to prompt to run as admin.
                         if (didReset.PromptToRelaunchAsAdmin == true)
                         {
                             dialog.SecondaryButtonText = "Relaunch as Administrator";
                         }
                         */
-                        var dialogResult = await dialog.ShowAsync();/*
+
+                        var dialogResult = await dialog.ShowAsync();
+
+                        /*
+                        // TODO: Add run as adminstrator
                         // Disabled as I am unsure how to prompt to run as admin.
                         if (didReset.PromptToRelaunchAsAdmin == true && dialogResult == ContentDialogResult.Secondary)
                         {
@@ -352,9 +338,7 @@ namespace DLSS_Swapper.Pages
             }
         }
 
-
-
-        async Task LoadGamesAndDlls()
+        private async Task LoadGamesAndDlls()
         {
             if (_loadingGamesAndDlls)
                 return;
@@ -367,7 +351,6 @@ namespace DLSS_Swapper.Pages
             var tasks = new List<Task>();
             tasks.Add(LoadGamesAsync());
 
-
             await Task.WhenAll(tasks);
 
             DispatcherQueue.TryEnqueue(() =>
@@ -377,12 +360,12 @@ namespace DLSS_Swapper.Pages
             });
         }
 
-        async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadGamesAndDlls();
         }
 
-        async void FilterButton_Click(object sender, RoutedEventArgs e)
+        private async void FilterButton_Click(object sender, RoutedEventArgs e)
         {
             var gameFilterControl = new GameFilterControl();
 
@@ -396,7 +379,7 @@ namespace DLSS_Swapper.Pages
             };
             var result = await dialog.ShowAsync();
 
-            if (result == ContentDialogResult.Primary)
+            if (result is ContentDialogResult.Primary)
             {
                 Settings.Instance.HideNonDLSSGames = gameFilterControl.IsHideNonDLSSGamesChecked();
                 Settings.Instance.GroupGameLibrariesTogether = gameFilterControl.IsGroupGameLibrariesTogetherChecked();

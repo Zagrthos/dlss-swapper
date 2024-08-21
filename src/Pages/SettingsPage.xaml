@@ -1,12 +1,10 @@
 ﻿<Page
     x:Class="DLSS_Swapper.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DLSS_Swapper"
-    xmlns:converters="using:DLSS_Swapper.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="using:CommunityToolkit.WinUI.UI"
+    xmlns:converters="using:DLSS_Swapper.Converters"
     xmlns:usercontrols="using:DLSS_Swapper.UserControls"
     mc:Ignorable="d"
     NavigationCacheMode="Required">
@@ -32,7 +30,6 @@
                     <RadioButton x:Name="DefaultThemeRadioButton" GroupName="ThemeGroup" Tag="Default" Checked="ThemeRadioButton_Checked" Content="Use system setting" />
                 </StackPanel>
 
-
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
@@ -51,7 +48,6 @@
                         DLSS dlls are checked if they are trusted in Windows by validating the signature before being swapped into a game folder. If a dll fails signature validation then it will not be used. It is recommended to keep this off as the only known DLSS dlls to fail signature validation are 1.0.11 and 1.0.13.
                     </TextBlock>
                 </StackPanel>
-
 
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
@@ -86,7 +82,6 @@
                     </TextBlock>
                 </StackPanel>
 
-
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
@@ -114,7 +109,6 @@
                 </TextBlock>
                 <Button Content="Check for updates" Margin="0,12,0,0" Command="{Binding CheckForUpdatesCommand}" />
 
-                
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
@@ -122,11 +116,10 @@
                 <RichTextBlock Margin="0,12,0,0">
                     <Paragraph>
                         You can suggest a feature or report a problem or on the DLSS Swapper
-                        <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/issues">GitHub repository</Hyperlink>.
+                        <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/issues">GitHub repository</Hyperlink> .
                     </Paragraph>
                 </RichTextBlock>
 
-                
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Margin="0,40,0,0"
@@ -137,10 +130,10 @@
                         <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/graphs/contributors">contributors</Hyperlink>
                         and the people who have filed
                         <Hyperlink NavigateUri="https://github.com/beeradmoore/dlss-swapper/issues">feedback</Hyperlink> to help improve the product.
-                        <LineBreak />(also NVIDIA for DLSS 😊)
+                        <LineBreak /> (also NVIDIA for DLSS 😊)
                     </Paragraph>
                 </RichTextBlock>
-
+                
             </StackPanel>
         </ScrollViewer>
     </Grid>

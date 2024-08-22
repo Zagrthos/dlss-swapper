@@ -241,7 +241,7 @@ namespace DLSS_Swapper.Pages
                     Content = dlssPickerControl,
                 };
 
-                if (!string.IsNullOrWhiteSpace(game.BaseDLSSVersion))
+                if (string.IsNullOrEmpty(game.BaseDLSSVersion) is false)
                 {
                     dialog.SecondaryButtonText = "Reset";
                 }

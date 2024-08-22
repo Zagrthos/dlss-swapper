@@ -165,7 +165,7 @@ namespace DLSS_Swapper.Pages
                 {
                     foreach (var gameLibrary in GameLibraries)
                     {
-                        games.AddRange(gameLibrary.LoadedGames.Where(g => g.HasDLSS));
+                        games.AddRange(gameLibrary.LoadedGames.Where(g => g.HasDLSS is true));
                     }
                 }
                 else
@@ -203,7 +203,7 @@ namespace DLSS_Swapper.Pages
             {
                 EasyContentDialog dialog;
 
-                if (!game.HasDLSS)
+                if (game.HasDLSS is false)
                 {
                     dialog = new EasyContentDialog(XamlRoot)
                     {
@@ -252,7 +252,7 @@ namespace DLSS_Swapper.Pages
                 {
                     var selectedDLSSRecord = dlssPickerControl.GetSelectedDLSSRecord();
 
-                    if (selectedDLSSRecord.LocalRecord.IsDownloading || !selectedDLSSRecord.LocalRecord.IsDownloaded)
+                    if (selectedDLSSRecord.LocalRecord.IsDownloading is true || selectedDLSSRecord.LocalRecord.IsDownloaded is false)
                     {
                         // TODO: Initiate download here.
                         dialog = new(XamlRoot)
@@ -269,7 +269,7 @@ namespace DLSS_Swapper.Pages
 
                     var didUpdate = game.UpdateDll(selectedDLSSRecord);
 
-                    if (!didUpdate.Success)
+                    if (didUpdate.Success is false)
                     {
                         dialog = new(XamlRoot)
                         {
@@ -304,7 +304,7 @@ namespace DLSS_Swapper.Pages
                 {
                     var didReset = game.ResetDll();
 
-                    if (!didReset.Success)
+                    if (didReset.Success is false)
                     {
                         dialog = new EasyContentDialog(XamlRoot)
                         {

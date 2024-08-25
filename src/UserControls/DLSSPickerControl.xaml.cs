@@ -17,7 +17,14 @@ namespace DLSS_Swapper.UserControls
         {
             _game = game;
             bool hideNotDownloaded = Settings.Instance.HideNotDownloadedVersions;
-            DLSSRecords.AddRange(App.CurrentApp.MainWindow.CurrentDLSSRecords.Where(r => r.LocalRecord.IsDownloaded == hideNotDownloaded));
+            if (hideNotDownloaded)
+            {
+                DLSSRecords.AddRange(App.CurrentApp.MainWindow.CurrentDLSSRecords.Where(r => r.LocalRecord.IsDownloaded is true));
+            }
+            else
+            {
+                DLSSRecords.AddRange(App.CurrentApp.MainWindow.CurrentDLSSRecords);
+            }
 
             this.InitializeComponent();
             DataContext = this;

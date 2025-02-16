@@ -1,6 +1,7 @@
 ﻿using AsyncAwaitBestPractices;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Extensions;
+using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Pages;
 using DLSS_Swapper.UserControls;
 using Microsoft.UI;
@@ -229,6 +230,21 @@ namespace DLSS_Swapper
                 releaseNotesTask = gitHubUpdater.GetReleaseFromTag($"v{currentAppVersion.Major}.{currentAppVersion.Minor}.{currentAppVersion.Build}.{currentAppVersion.Revision}"); 
             }
             */
+
+            if (!PathHelpers.CheckIfPathIsReadOnly(AppContext.BaseDirectory) && !PathHelpers.CheckIfUserHasWritePermissions(AppContext.BaseDirectory))
+            {
+                EasyContentDialog dialog = new(MainNavigationView.XamlRoot)
+                {
+                    Title = "Error",
+                    CloseButtonText = "Close",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = "DLSS Swapper is unable to run from a read-only directory. Please move DLSS Swapper to a directory where it can write files.",
+                };
+
+                _ = await dialog.ShowAsync();
+                
+                Application.Current.Exit();
+            }
 
             var gitHubUpdater = new Data.GitHub.GitHubUpdater();
 
